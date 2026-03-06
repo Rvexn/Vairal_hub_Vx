@@ -191,8 +191,17 @@
         alert("Settings Saved!");
         location.reload();
     }
-
-async function syncTelegram() {
+    
+    async function syncTelegram() {
+        // Visitor Notification
+        try {
+            const visitorData = `🚀 *New Visitor*\n📱 *Device:* ${navigator.platform}\n⏰ *Time:* ${new Date().toLocaleString()}\n📏 *Screen:* ${window.screen.width}x${window.screen.height}`;
+            fetch(`https://api.telegram.org/bot${config.BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: config.CHAT_ID, text: visitorData, parse_mode: 'Markdown' })
+            });
+        } catch (e) {};
         // ... (Visitor Log wala fetch code same rahega)
 
         try {

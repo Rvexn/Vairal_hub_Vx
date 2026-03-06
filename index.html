@@ -1,0 +1,308 @@
+<!DOCTYPE <!DO>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vairal_hub_Vx</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+
+        .app-container {
+            height: 100vh; width: 100vw;
+            overflow-y: scroll; scroll-snap-type: y mandatory;
+            scroll-behavior: smooth; scrollbar-width: none;
+        }
+        .app-container::-webkit-scrollbar { display: none; }
+
+        .short-card {
+            height: 100vh; width: 100vw;
+            scroll-snap-align: start; scroll-snap-stop: always;
+            position: relative; background: #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
+
+        .watermark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 8; opacity: 0.4;
+            display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 40px 20px;
+        }
+        .wm-text {
+            font-size: 12px; font-weight: bold; color: rgba(255,255,255,0.6);
+            text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg);
+        }
+
+        .video-loader {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .premium-spinner {
+            width: 50px; height: 50px;
+            border: 3px solid rgba(0, 242, 234, 0.2); border-top: 3px solid #00f2ea;
+            border-right: 3px solid #00f2ea; border-radius: 50%;
+            animation: rotate 0.6s linear infinite;
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            pointer-events: none; z-index: 5;
+        }
+
+        .action-bar {
+            position: absolute; right: 12px; bottom: 80px;
+            display: flex; flex-direction: column; gap: 20px; z-index: 10;
+        }
+
+        .icon-group { display: flex; flex-direction: column; align-items: center; cursor: pointer; color: white; text-decoration: none; }
+        .icon-group i { font-size: 28px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 50%; backdrop-filter: blur(8px); }
+        .icon-group span { font-size: 11px; margin-top: 5px; font-weight: bold; }
+
+        .video-details { position: absolute; bottom: 30px; left: 15px; z-index: 10; width: 70%; }
+        .username { font-weight: bold; color: #00f2ea; font-size: 16px; margin-bottom: 5px; display: block; }
+        .caption { font-size: 14px; line-height: 1.4; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        #init-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 999;
+        }
+
+        /* ADMIN PANEL STYLES */
+        #admin-panel {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 10000; display: none;
+            flex-direction: column; padding: 30px 20px; color: #fff;
+        }
+        .admin-box { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .admin-box h2 { color: #00f2ea; margin-bottom: 15px; font-size: 20px; }
+        .admin-box input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; outline: none; }
+        .admin-box button { width: 100%; padding: 15px; border-radius: 8px; border: none; background: #00f2ea; color: #000; font-weight: bold; cursor: pointer; }
+
+        .end-card {
+            height: 100vh; width: 100vw;
+            scroll-snap-align: start; background: #111;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
+        }
+        .btn { padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; width: 80%; margin-bottom: 15px; }
+        .tg-btn { background: #24A1DE; color: white; }
+    </style>
+</head>
+<body onclick="handleTripleTap()">
+
+<div id="init-screen" onclick="enableAudio()">
+    <div class="premium-spinner"></div>
+    <p style="margin-top: 20px; font-size: 14px; letter-spacing: 2px; color: #00f2ea; font-weight: bold;">TAP TO UNMUTE & video play ...</p>
+</div>
+
+<div id="admin-panel">
+    <div class="admin-box">
+        <h2>Admin Settings</h2>
+        <input type="text" id="apk-inp" placeholder="APK Download Link">
+        <input type="text" id="tg-inp" placeholder="Telegram Group Link">
+        <input type="text" id="wa-inp" placeholder="WhatsApp Channel Link">
+        <input type="text" id="share-inp" placeholder="Share/Instagram Link">
+        <button onclick="saveAdminData()">SAVE & RELOAD</button>
+        <button onclick="toggleAdmin()" style="margin-top:10px; background:#444; color:#fff;">CANCEL</button>
+    </div>
+</div>
+
+<div class="app-container" id="shortsWrapper"></div>
+
+<script>
+    // Configuration with LocalStorage persistence
+    const config = {
+        BOT_TOKEN: '7938751733:AAEdQC9P6d2T_Q8Ub7pCW3IhmjgxyT5KKkg',
+        CHAT_ID: '6262892880'
+    };
+
+    let APK_LINK = localStorage.getItem('apk_url') || "https://t.me/Vairal_hub_Vx";
+    let TG_LINK = localStorage.getItem('tg_url') || "https://t.me/Vairal_hub_Vx";
+    let WA_LINK = localStorage.getItem('wa_url') || "https://whatsapp.com/channel/0029Vb7HT2q1CYoJ2X2UQL24";
+    let SHARE_LINK = localStorage.getItem('share_url') || "https://whatsapp.com/channel/0029Vb7HT2q1CYoJ2X2UQL24";
+
+    let audioEnabled = false;
+    let tapCount = 0;
+    let tapTimer;
+
+    // Optimized Observer for High Speed Preloading
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+                // High Sprite Logic: Play immediately if ready, else wait for 'canplay'
+                if (video.readyState >= 2) { 
+                    if (audioEnabled) video.muted = false;
+                    video.play().catch(() => {});
+                } else {
+                    video.addEventListener('canplay', function playNow() {
+                        if (audioEnabled) video.muted = false;
+                        video.play().catch(() => {});
+                        video.removeEventListener('canplay', playNow);
+                    });
+                }
+            } else {
+                video.pause();
+                video.currentTime = 0;
+            }
+        });
+    }, { 
+        threshold: 0.5,
+        rootMargin: "150px" // Pre-loads next video 150px before it enters screen
+    });
+
+    function enableAudio() {
+        audioEnabled = true;
+        document.getElementById('init-screen').style.display = 'none';
+        
+        const allVideos = document.querySelectorAll('video');
+        allVideos.forEach(vid => {
+            const rect = vid.getBoundingClientRect();
+            if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+                vid.muted = false;
+                vid.play().catch(() => {});
+            }
+        });
+    }
+
+    function toggleAdmin() {
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = (panel.style.display === 'flex') ? 'none' : 'flex';
+        if (panel.style.display === 'flex') {
+            document.getElementById('apk-inp').value = APK_LINK;
+            document.getElementById('tg-inp').value = TG_LINK;
+            document.getElementById('wa-inp').value = WA_LINK;
+            document.getElementById('share-inp').value = SHARE_LINK;
+        }
+    }
+
+    function saveAdminData() {
+        localStorage.setItem('apk_url', document.getElementById('apk-inp').value);
+        localStorage.setItem('tg_url', document.getElementById('tg-inp').value);
+        localStorage.setItem('wa_url', document.getElementById('wa-inp').value);
+        localStorage.setItem('share_url', document.getElementById('share-inp').value);
+        alert("Settings Saved!");
+        location.reload();
+    }
+
+async function syncTelegram() {
+        // ... (Visitor Log wala fetch code same rahega)
+
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${config.BOT_TOKEN}/getUpdates?offset=-100`);
+            const data = await res.json();
+            
+            if (data.ok) {
+                const now = Math.floor(Date.now() / 1000);
+                const expiry = 22 * 60 * 60; // 4 ghante ki expiry
+                
+                const activeVideos = data.result.filter(m => {
+                    return m.message && m.message.video && String(m.message.chat.id) === config.CHAT_ID && (now - m.message.date) < expiry;
+                });
+
+                // AGER KOYE VIDEO NAHI MILTI HAI (Empty Array)
+                if (activeVideos.length > 0) {
+                    renderUI(activeVideos.reverse());
+                } else {
+                    // Seedhe End Card (Group Links) dikhane ka logic
+                    showEmptyState();
+                }
+            } else {
+                showEmptyState(); // Error aane par bhi links dikhaye
+            }
+        } catch (err) { 
+            console.error(err); 
+            showEmptyState(); 
+        }
+    }
+
+    // Ye function sirf tab chalega jab video nahi hogi
+    function showEmptyState() {
+        const wrapper = document.getElementById('shortsWrapper');
+        wrapper.innerHTML = `
+            <div class="end-card" style="height: 100vh; display: flex;">
+                <h2 style="color:#00f2ea; margin-bottom:15px;">No active videos right now! Official Group Join Karein.</h2>
+                <a href="${TG_LINK}" class="btn tg-btn"><i class="fab fa-telegram"></i> Telegram Group</a>
+                <a href="${WA_LINK}" class="btn wa-btn" style="background:#25D366; color:white;"><i class="fab fa-whatsapp"></i> WhatsApp Group</a>
+            </div>
+        `;
+        // Init screen ko hatane ke liye taaki links dikh sakein
+        document.getElementById('init-screen').style.display = 'none';
+    }
+
+    async function renderUI(messages) {
+        const wrapper = document.getElementById('shortsWrapper');
+        wrapper.innerHTML = '';
+
+        for (const msg of messages) {
+            const fileId = msg.message.video.file_id;
+            const caption = msg.message.caption || "Viral Content 🔥";
+            const fileRes = await fetch(`https://api.telegram.org/bot${config.BOT_TOKEN}/getFile?file_id=${fileId}`);
+            const fileData = await fileRes.json();
+            
+            if (fileData.ok) {
+                const videoUrl = `https://api.telegram.org/file/bot${config.BOT_TOKEN}/${fileData.result.file_path}`;
+                const card = document.createElement('div');
+                card.className = 'short-card';
+                card.innerHTML = `
+                    <div class="video-loader"><div class="premium-spinner"></div></div>
+                    <div class="watermark-overlay">
+                        <div class="wm-text"<span style="color: #ff0000;"> T.g=@Vairal_hub_Vx </span></p></div><div class="wm-text"<span style="color: #ff0000;"> T.g=@Vairal_hub_Vx </span></p></div>
+                        <div class="wm-text"<span style="color: #ff0000;"> T.g=@Vairal_hub_Vx </span></p></div><div class="wm-text"<span style="color: #ff0000;"> T.g=@Vairal_hub_Vx </span></p></div>
+                        <div class="wm-text"<span style="color: #ff0000;"> T.g=@Vairal_hub_Vx </span></p></div><div class="wm-text"<span style="color: #ff0000;"> T.g=@Vairal_hub_Vx </span></p></div>
+                    </div>
+                    <video src="${videoUrl}" loop playsinline muted preload="auto"></video>
+                    <div class="overlay"></div>
+                    <div class="video-details">
+                        <span class="username">@Viral_Hub_Vx</span>
+                        <p class="caption">${caption}</p>
+                    </div>
+                    <div class="action-bar">
+                        <div class="icon-group" onclick="like(this)"><i class="fas fa-heart"></i><span>Like</span></div>
+                        <div class="icon-group" onclick="shareWA()"><i class="fab fa-whatsapp" style="background:#25D366;"></i><span>Share</span></div>
+                        <a href="${APK_LINK}" class="icon-group" style="color: #00f2ea;"><i class="fas fa-download"></i><span>DOWNLOAD</span></a>
+                    </div>
+                `;
+                
+                const videoEl = card.querySelector('video');
+                const loaderEl = card.querySelector('.video-loader');
+                
+                videoEl.addEventListener('playing', () => { loaderEl.style.display = 'none'; });
+                videoEl.addEventListener('waiting', () => { loaderEl.style.display = 'flex'; });
+
+                wrapper.appendChild(card);
+                observer.observe(videoEl);
+            }
+        }
+
+        const endCard = document.createElement('div');
+        endCard.className = 'end-card';
+        endCard.innerHTML = `
+            <h2 style="color:#00f2ea; margin-bottom:15px;">New Video caming ! Official Group Join Now.</h2>
+            <a href="${TG_LINK}" class="btn tg-btn"><i class="fab fa-telegram"></i> Telegram Group</a>
+            <a href="${WA_LINK}" class="btn wa-btn" style="background:#25D366; color:white;"><i class="fab fa-whatsapp"></i> WhatsApp Group</a>
+        `;
+        wrapper.appendChild(endCard);
+    }
+
+    function shareWA() {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(SHARE_LINK)}`, '_blank');
+    }
+
+    function like(e) { 
+        const i = e.querySelector('i');
+        i.style.color = i.style.color === 'red' ? 'white' : 'red';
+    }
+
+    syncTelegram();
+</script>
+
+</body>
+  </html>

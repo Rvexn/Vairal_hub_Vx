@@ -97,13 +97,13 @@
     const BOT_TOKEN = '7938751733:AAEdQC9P6d2T_Q8Ub7pCW3IhmjgxyT5KKkg';
     const CHAT_ID = '6262892880';
     const APK_LINK = "https://t.me/Mms_tv_bot";
-    const TG_LINK = "https://t.me/Mms_tv_bot";
+    const TG_LINK = "https://t.me/Mms_tv_publish";
     const WA_LINK = "https://whatsapp.com/channel/0029Vb7HT2q1CYoJ2X2UQL24";
     const SHARE_LINK = "https://t.me/Mms_tv_bot";
+    // Naya Link
+    const MASTER_LINK = "https://mms-link-master.vercel.app/";
 
     let audioEnabled = false;
-
-    // Double Tap Logic Variables
     let lastTap = 0;
 
     const observer = new IntersectionObserver((entries) => {
@@ -148,13 +148,38 @@
             const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?limit=100`);
             const data = await res.json();
             if (data.ok) {
+                const nowInSeconds = Math.floor(Date.now() / 1000);
+                const limit24Hours = 24 * 60 * 60; 
+
                 const activeVideos = data.result.filter(m => {
                     const message = m.channel_post || m.message;
-                    return message && message.video && String(message.chat.id) === CHAT_ID;
+                    if (message && message.video && String(message.chat.id) === CHAT_ID) {
+                        const messageAge = nowInSeconds - message.date;
+                        return messageAge < limit24Hours;
+                    }
+                    return false;
                 });
-                if (activeVideos.length > 0) renderUI(activeVideos.reverse());
+
+                if (activeVideos.length > 0) {
+                    renderUI(activeVideos.reverse());
+                } else {
+                    showEmptyState();
+                }
             }
         } catch (err) { console.error(err); }
+    }
+
+    function showEmptyState() {
+        const wrapper = document.getElementById('shortsWrapper');
+        wrapper.innerHTML = `
+            <div class="end-card">
+                <h2 style="color:#00f2ea;">No New Videos!</h2>
+                <p style="margin: 10px 0;">Video updating join offcial group .</p>
+                <a href="${TG_LINK}" class="btn tg-btn"><i class="fab fa-telegram"></i> Join Telegram</a>
+                <a href="${MASTER_LINK}" class="btn" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); color: white;"><i class="fas fa-link"></i> MMS Link Master</a>
+            </div>
+        `;
+        document.getElementById('init-screen').style.display = 'none';
     }
 
     async function renderUI(messages) {
@@ -165,7 +190,7 @@
             const msg = messages[i];
             const message = msg.channel_post || msg.message;
             const fileId = message.video.file_id;
-            const caption = message.caption || "Viral Content 🔥 charge telegram 🔍 @Mms_tv_bot ";
+            const caption = message.caption || "Viral Content 🔥Charge telegram 🔍 @Mms_tv_bot";
             
             const fileRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
             const fileData = await fileRes.json();
@@ -175,15 +200,14 @@
                 const card = document.createElement('div');
                 card.className = 'short-card';
                 
-                // Preload management
                 const preloadType = (i < 2) ? "auto" : "metadata";
 
                 card.innerHTML = `
                     <div class="video-loader"><div class="premium-spinner"></div></div>
                     <div class="watermark-overlay">
-                        <div class="wm-text"<span style="color: #ff0000;"> 🔍T.g=@Mms_tv_bot </span></p></div><div class="wm-text"<span style="color: #ff0000;"> 🔍T.g=@Mms_tv_bot </span></p></div>
-                        <div class="wm-text"<span style="color: #ff0000;"> 🔍T.g=@Mms_tv_bot </span></p></div><div class="wm-text"<span style="color: #ff0000;"> 🔍T.g=@Mms_tv_bot </span></p></div>
-                        <div class="wm-text"<span style="color: #ff0000;"> 🔍T.g=@Mms_tv_bot </span></p></div><div class="wm-text"<span style="color: #ff0000;"> 🔍T.g=@Mms_tv_bot </span></p></div>
+                        <div class="wm-text">🔍T.G—@Mms_tv_bot</div><div class="wm-text">🔍T.G—@Mms_tv_bot</div>
+                        <div class="wm-text">🔍T.G—@Mms_tv_bot</div><div class="wm-text">🔍T.G—@Mms_tv_bot</div>
+                        <div class="wm-text">🔍T.G—@Mms_tv_bot</div><div class="wm-text">🔍T.G—@Mms_tv_bot</div>
                     </div>
                     <video src="${videoUrl}" loop playsinline muted preload="${preloadType}"></video>
                     <div class="overlay"></div>
@@ -193,12 +217,12 @@
                     </div>
                     <div class="action-bar">
                         <div class="icon-group" onclick="like(this)"><i class="fas fa-heart"></i><span>Like</span></div>
-                        <div class="icon-group" onclick="shareWA()"><i class="fab fa-whatsapp" style="background:#25D366;"></i><span>Share</span></div>
+                        <div class="icon-group" onclick="shareTG()"><i class="fab fa-telegram" style="background:#24A1DE;"></i><span>Telegram</span></div>
+                        <div class="icon-group" onclick="shareWA()"><i class="fab fa-whatsapp" style="background:#25D366;"></i><span>WhatsApp</span></div>
                         <a href="${APK_LINK}" class="icon-group" style="color: #00f2ea;"><i class="fas fa-download"></i><span>DOWNLOAD </span></a>
                     </div>
                 `;
                 
-                // Double Tap Listener
                 card.addEventListener('touchend', function(e) {
                     let curTime = new Date().getTime();
                     let tapLen = curTime - lastTap;
@@ -220,23 +244,21 @@
             }
         }
 
-        // End Card
         const endCard = document.createElement('div');
         endCard.className = 'end-card';
         endCard.innerHTML = `
             <h2 style="color:#00f2ea; margin-bottom:15px;">Official Group join first!</h2>
             <a href="${TG_LINK}" class="btn tg-btn"><i class="fab fa-telegram"></i> Telegram Group</a>
             <a href="${WA_LINK}" class="btn wa-btn" style="background:#25D366; color:white;"><i class="fab fa-whatsapp"></i> WhatsApp Group</a>
+            <a href="${MASTER_LINK}" class="btn" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); color: white;"><i class="fas fa-link"></i> Mms Link Master</a>
         `;
         wrapper.appendChild(endCard);
     }
 
-    // Double Tap Function
     function handleDoubleTap(card) {
         const likeBtn = card.querySelector('.fa-heart');
         likeBtn.style.color = 'red';
         
-        // Show floating heart animation
         const heart = document.createElement('i');
         heart.className = 'fas fa-heart';
         heart.style.cssText = `
@@ -248,7 +270,6 @@
         setTimeout(() => heart.remove(), 800);
     }
 
-    // CSS for heart animation (Add this to your <style> tag)
     const style = document.createElement('style');
     style.innerHTML = `
         @keyframes heartFade {
@@ -261,6 +282,10 @@
 
     function shareWA() {
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(SHARE_LINK)}`, '_blank');
+    }
+
+    function shareTG() {
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_LINK)}&text=${encodeURIComponent("Check this viral video!")}`, '_blank');
     }
 
     function like(e) { 

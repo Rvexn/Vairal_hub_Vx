@@ -186,9 +186,6 @@
                 card.className = 'short-card';
                 card.style.position = 'relative';
 
-                // Video URL ko card me store kiya share ke liye
-                card.setAttribute('data-video-url', videoUrl);
-
                 card.innerHTML = `
                     <div class="video-loader" style="display:none; position:absolute; z-index:100;"><div class="premium-spinner"></div></div>
                     <div class="play-btn-overlay" style="position:absolute; z-index:20; font-size:60px; color:rgba(255,255,255,0.7); display:flex; pointer-events:none;">
@@ -210,8 +207,8 @@
                     </div>
                     <div class="action-bar">
                         <div class="icon-group" onclick="like(this)"><i class="fas fa-heart"></i><span>Like</span></div>
-                        <div class="icon-group" onclick="shareTG(this)"><i class="fab fa-telegram" style="background:#24A1DE;"></i><span>Telegram</span></div>
-                        <div class="icon-group" onclick="shareWA(this)"><i class="fab fa-whatsapp" style="background:#25D366;"></i><span>WhatsApp</span></div>
+                        <div class="icon-group" onclick="shareTG()"><i class="fab fa-telegram" style="background:#24A1DE;"></i><span>Telegram</span></div>
+                        <div class="icon-group" onclick="shareWA()"><i class="fab fa-whatsapp" style="background:#25D366;"></i><span>WhatsApp</span></div>
                         <a href="${APK_LINK}" class="icon-group" style="color: #00f2ea;"><i class="fas fa-download"></i><span>DOWNLOAD</span></a>
                     </div>
                 `;
@@ -277,21 +274,15 @@
     style.innerHTML = `@keyframes heartPop { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }`;
     document.head.appendChild(style);
 
-    // FIX: WhatsApp share with Video Link + Bot Link
-    function shareWA(el) {
-        const card = el.closest('.short-card');
-        const vidUrl = card.getAttribute('data-video-url');
-        const text = encodeURIComponent(`🔥 Watch Viral Video: ${vidUrl}\n\n🤖 Join Bot: ${SHARE_LINK}`);
+    // Share logic: Only Text and Bot URL
+    function shareWA() {
+        const text = encodeURIComponent(`🔥 Watch Viral Content on our Bot!\n\n🤖 Join Now: ${SHARE_LINK}`);
         window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
     }
 
-    // FIX: Telegram share with Video Link + Bot Link
-    function shareTG(el) {
-        const card = el.closest('.short-card');
-        const vidUrl = card.getAttribute('data-video-url');
-        const text = encodeURIComponent(`🔥 Join Viral Bot: @Mms_tv_bot`);
-        // Telegram par 'url' parameter thumbnail dikhane ke liye video ka hona chahiye
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(vidUrl)}&text=${text}`, '_blank');
+    function shareTG() {
+        const text = encodeURIComponent(`🔥 Check out this Viral Bot for amazing content!`);
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_LINK)}&text=${text}`, '_blank');
     }
 
     function like(e) { 

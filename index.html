@@ -10,198 +10,164 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-        
-        body { 
-            background-color: #f4f4f4; 
-            padding-bottom: 50px; 
-            -webkit-user-select: none; 
-            user-select: none; 
-        }
-
+        body { background-color: #f4f4f4; padding-bottom: 50px; -webkit-user-select: none; user-select: none; }
         img, video { pointer-events: none; -webkit-user-drag: none; }
 
         .top-nav { position: sticky; top: 0; background: white; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        .search-box { width: 100%; padding: 12px; border-radius: 30px; border: 1px solid #ddd; background: #f0f0f0; outline: none; }
+        .search-box { width: 100%; padding: 12px; border-radius: 30px; border: 1px solid #ddd; background: #f0f0f0; outline: none; font-size: 15px; }
 
-        #display-area { display: none; padding: 15px; background: #fff; border-bottom: 5px solid #e0e0e0; animation: fadeIn 0.5s; }
+        #display-area { display: none; padding: 15px; background: #fff; border-bottom: 5px solid #e0e0e0; animation: fadeIn 0.4s ease-out; }
         .main-card { max-width: 500px; margin: 0 auto; }
-        
-        .media-container { 
-            width: 100%; background: #000; border-radius: 12px; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center; min-height: 250px;
-        }
-        .media-container img, .media-container video { width: 100%; max-height: 80vh; object-fit: contain; }
+        .media-container { width: 100%; background: #000; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 250px; position: relative; }
+        .media-container img, .media-container video { width: 100%; max-height: 75vh; object-fit: contain; }
 
         .details { padding: 15px 0; text-align: center; }
-        .details h2 { font-size: 18px; margin-bottom: 15px; color: #333; }
-        
-        .btn-open { display: block; width: 100%; padding: 15px; background: #1877f2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 18px; box-shadow: 0 4px 10px rgba(24,119,242,0.3); margin-bottom: 12px; }
-
-        .button-group { display: flex; gap: 8px; margin-bottom: 15px; }
-        .btn-sub { flex: 1; padding: 12px 5px; font-size: 12px; font-weight: bold; color: white; text-decoration: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 5px; background: #24A1DE; }
+        .details h2 { font-size: 17px; margin-bottom: 12px; color: #222; }
+        .btn-open { display: block; width: 100%; padding: 15px; background: #1877f2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 18px; margin-bottom: 15px; }
+        .button-group { display: flex; gap: 8px; margin-bottom: 20px; }
+        .btn-sub { flex: 1; padding: 10px; font-size: 12px; font-weight: bold; color: white; text-decoration: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #24A1DE; }
 
         .trending-label { padding: 15px 10px 5px; font-weight: bold; color: #ff4500; font-size: 14px; display: flex; align-items: center; gap: 5px; }
-        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px; }
-        .grid-item { background: white; border-radius: 12px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; }
-        .grid-item .thumb-box { width: 100%; aspect-ratio: 1/1; background: #000; }
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+        .grid-item { background: white; border-radius: 10px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .thumb-box { width: 100%; aspect-ratio: 1/1; background: #000; overflow: hidden; }
         .grid-item img, .grid-item video { width: 100%; height: 100%; object-fit: cover; }
-        .grid-item p { padding: 10px; font-size: 12px; font-weight: bold; color: #333; height: 50px; overflow: hidden; }
+        .grid-item p { padding: 8px; font-size: 12px; font-weight: bold; color: #333; height: 45px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
-        #loading { text-align: center; padding: 40px; font-weight: bold; color: #517da2; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        #loading { text-align: center; padding: 50px 20px; font-weight: bold; color: #517da2; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
-<body oncontextmenu="return false;"> 
+<body oncontextmenu="return false;">
 
 <div class="top-nav">
-    <input type="text" class="search-box" id="search" placeholder="Search latest posts..." onkeyup="searchPosts()">
+    <input type="text" class="search-box" id="search" placeholder="Search recent posts..." onkeyup="searchPosts()">
 </div>
 
 <div id="display-area">
     <div class="main-card">
-        <div class="media-container">
-            <img id="view-img" src="" style="display:none;">
-            <video id="view-video" controls autoplay playsinline style="display:none;"></video>
-        </div>
+        <div class="media-container" id="player-box"></div>
         <div class="details">
-            <h2 id="view-title">Title</h2>
+            <h2 id="view-title">Loading...</h2>
             <a id="view-link" href="#" class="btn-open" target="_blank"><i class="fas fa-play-circle"></i> WATCH FULL VIDEO</a>
-            
             <div class="button-group">
                 <a href="https://t.me/Mms_tv_publish" target="_blank" class="btn-sub"><i class="fab fa-telegram"></i> Official Channel </a>
                 <a href="https://t.me/+J6c2h0LUdC1iNjJl" target="_blank" class="btn-sub"><i class="fab fa-telegram"></i> Private Channnel </a>
             </div>
-            
-            <div id="suggestion-box">
-                <div class="trending-label" style="color:#333"><i class="fas fa-random"></i> Recommended</div>
-                <div class="photo-grid" id="random-container"></div>
-            </div>
+            <div class="trending-label" style="color:#333"><i class="fas fa-random"></i> Recommended</div>
+            <div class="photo-grid" id="random-container"></div>
         </div>
     </div>
 </div>
 
-<div class="trending-label"><i class="fas fa-bolt"></i> Mms Video & Link  (LAST 7 DAYS)</div>
-<div id="loading"><i class="fas fa-spinner fa-spin"></i> Checking for new updates...</div>
+<div class="trending-label"><i class="fas fa-bolt"></i> LATEST UPDATES (7 DAYS)</div>
+<div id="loading"><i class="fas fa-spinner fa-spin"></i> Fetching live feed...</div>
 <div id="post-container" class="photo-grid"></div>
 
 <script>
-    const BOT_TOKEN = '7938751733:AAEdQC9P6d2T_Q8Ub7pCW3IhmjgxyT5KKkg';
+    const BOT_TOKEN = '8699882051:AAEdya_xhjtPX-uGVfnQGEF_xNe6Qd7fpK0';
     const CHAT_ID = '6262892880';
-    let allTelegramPosts = [];
+    let allPosts = [];
+    let currentRandomPosts = []; // Random posts track karne ke liye
 
-    // Auto-Play Observer
-    const videoObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.play().catch(() => {});
-            else entry.target.pause();
-        });
+    const observer = new IntersectionObserver((es) => {
+        es.forEach(e => { if(e.isIntersecting) e.target.play().catch(()=>{}); else e.target.pause(); });
     }, { threshold: 0.5 });
 
-    async function fetchTelegramPosts() {
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?limit=100`;
+    async function loadFeed() {
         try {
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            if (data.ok) {
-                document.getElementById('loading').style.display = 'none';
-                const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-                const now = Date.now();
+            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?limit=100`);
+            const data = await res.json();
+            if(!data.ok) return;
 
-                // Filter: Chat ID Match + Media Exists + Less than 7 days old
-                let rawMsgs = data.result.filter(u => {
-                    if (u.message && u.message.chat.id.toString() === CHAT_ID && (u.message.photo || u.message.video)) {
-                        return (now - (u.message.date * 1000)) < oneWeekMs;
-                    }
-                    return false;
-                });
+            document.getElementById('loading').style.display = 'none';
+            const limit = 7 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
 
-                rawMsgs.reverse();
+            const filtered = data.result.filter(u => 
+                u.message && u.message.chat.id.toString() === CHAT_ID && 
+                (u.message.photo || u.message.video) && 
+                (now - (u.message.date * 1000)) < limit
+            ).reverse();
 
-                for (let u of rawMsgs) {
-                    const msg = u.message;
-                    let fileId, isVideo = false;
-                    if (msg.video) { fileId = msg.video.file_id; isVideo = true; }
-                    else { fileId = msg.photo[msg.photo.length - 1].file_id; }
-
-                    const caption = msg.caption || "Mms Video";
-                    const urlMatch = caption.match(/https?:\/\/[^\s]+/);
-                    const link = urlMatch ? urlMatch[0] : "#";
-                    const title = caption.replace(link, "").trim() || "Viral Media";
-
-                    const fRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
-                    const fData = await fRes.json();
-                    const mediaUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fData.result.file_path}`;
-
-                    allTelegramPosts.push({ mediaUrl, title, link, isVideo });
-                }
+            allPosts = []; // Reset array
+            for(let u of filtered) {
+                const m = u.message;
+                const isVid = !!m.video;
+                const fId = isVid ? m.video.file_id : m.photo[m.photo.length-1].file_id;
                 
-                if (allTelegramPosts.length === 0) {
-                    document.getElementById('loading').innerHTML = "No posts from the last 7 days.";
-                } else {
-                    renderGrid(allTelegramPosts, 'post-container');
-                }
+                const cap = m.caption || "Viral Content";
+                const urlMatch = cap.match(/https?:\/\/[^\s]+/);
+                const link = urlMatch ? urlMatch[0] : "#";
+                const title = cap.replace(link, "").trim() || "Viral Media";
+
+                const fileRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fId}`);
+                const fileData = await fileRes.json();
+                const url = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileData.result.file_path}`;
+
+                allPosts.push({ url, title, link, isVid });
             }
-        } catch (e) {
-            document.getElementById('loading').innerHTML = "Error. Refresh Page.";
-        }
+            draw(allPosts, 'post-container');
+        } catch(e) { document.getElementById('loading').innerText = "Failed to load."; }
     }
 
-    function renderGrid(postsArray, containerId) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = postsArray.map(p => `
-            <div class="grid-item" onclick="handlePostClick('${p.mediaUrl}', '${p.title.replace(/'/g, "")}', '${p.link}', ${p.isVideo})">
+    function draw(arr, cid) {
+        const con = document.getElementById(cid);
+        if(cid === 'random-container') currentRandomPosts = arr; // Store random posts context
+
+        con.innerHTML = arr.map((p, i) => `
+            <div class="grid-item" onclick="openPost(${i}, '${cid}')">
                 <div class="thumb-box">
-                    ${p.isVideo ? 
-                        `<video class="lazy-vid" src="${p.mediaUrl}" muted loop playsinline></video>` : 
-                        `<img src="${p.mediaUrl}" loading="lazy">`
-                    }
+                    ${p.isVid ? `<video class="lazy" src="${p.url}" muted loop playsinline></video>` : `<img src="${p.url}" loading="lazy">`}
                 </div>
-                <p>${p.isVideo ? '🎥 ' : '🖼️ '}${p.title}</p>
+                <p>${p.isVid ? '🎥' : '🖼️'} ${p.title}</p>
             </div>
         `).join('');
-
-        if(containerId === 'post-container') {
-            document.querySelectorAll('.lazy-vid').forEach(v => videoObserver.observe(v));
-        }
+        if(cid === 'post-container') document.querySelectorAll('.lazy').forEach(v => observer.observe(v));
     }
 
-    function handlePostClick(url, title, link, isVideo) {
-        const vEle = document.getElementById('view-video');
-        const iEle = document.getElementById('view-img');
-        
-        // Reset and Hide
-        vEle.pause(); vEle.src = ""; vEle.style.display = 'none';
-        iEle.src = ""; iEle.style.display = 'none';
+    function openPost(index, fromCid) {
+        // Sahi post choose karein context ke hisaab se
+        const post = (fromCid === 'random-container') ? currentRandomPosts[index] : allPosts[index];
 
-        if (isVideo) {
-            vEle.src = url; vEle.style.display = 'block'; vEle.play();
+        if(!post) return;
+
+        const pBox = document.getElementById('player-box');
+        
+        // Video play fix: .play() call manually with error handling
+        if(post.isVid) {
+            pBox.innerHTML = `<video id="main-player" controls autoplay playsinline src="${post.url}" style="width:100%"></video>`;
+            const v = document.getElementById('main-player');
+            v.play().catch(() => {
+                v.muted = true; // Agar browser block kare toh mute karke play karein
+                v.play();
+            });
         } else {
-            iEle.src = url; iEle.style.display = 'block';
+            pBox.innerHTML = `<img src="${post.url}" style="width:100%">`;
         }
 
-        document.getElementById('view-title').innerText = title;
-        document.getElementById('view-link').href = link;
+        document.getElementById('view-title').innerText = post.title;
+        document.getElementById('view-link').href = post.link;
         document.getElementById('display-area').style.display = 'block';
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        const shuffled = [...allTelegramPosts].filter(p => p.mediaUrl !== url).sort(() => 0.5 - Math.random()).slice(0, 8);
-        renderGrid(shuffled, 'random-container');
+        // Update Suggestions (Exclude current post)
+        const shuffled = allPosts.filter(p => p.url !== post.url).sort(() => 0.5 - Math.random()).slice(0, 4);
+        draw(shuffled, 'random-container');
 
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("🔥 User Opened: " + title)}`);
+        // Notification to your Bot
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("🔥 User Opened: " + post.title)}`);
     }
 
     function searchPosts() {
-        let term = document.getElementById('search').value.toLowerCase();
-        let items = document.querySelectorAll('#post-container .grid-item');
-        items.forEach(item => {
-            item.style.display = item.innerText.toLowerCase().includes(term) ? "block" : "none";
+        let t = document.getElementById('search').value.toLowerCase();
+        document.querySelectorAll('#post-container .grid-item').forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(t) ? "block" : "none";
         });
     }
 
-    window.onload = fetchTelegramPosts;
+    window.onload = loadFeed;
 </script>
 
 </body>

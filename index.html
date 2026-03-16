@@ -2,295 +2,206 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mms tv bot </title>
+
+<script src="https://pl28622374.effectivegatecpm.com/dc/da/86/dcda86c6b4d0fcb50d4bc9138245046b.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-
-        .app-container {
-            height: 100vh; width: 100vw;
-            overflow-y: scroll; scroll-snap-type: y mandatory;
-            scroll-behavior: smooth; scrollbar-width: none;
-        }
-        .app-container::-webkit-scrollbar { display: none; }
-
-        .short-card {
-            height: 100vh; width: 100vw;
-            scroll-snap-align: start; scroll-snap-stop: always;
-            position: relative; background: #000;
-            display: flex; align-items: center; justify-content: center;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        
+        body { 
+            background-color: #f4f4f4; 
+            padding-bottom: 50px; 
+            -webkit-user-select: none; 
+            user-select: none; 
         }
 
-        video { width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
+        img, video { pointer-events: none; -webkit-user-drag: none; }
 
-        .watermark-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 8; opacity: 0.4;
-            display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 40px 20px;
+        .top-nav { position: sticky; top: 0; background: white; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
+        .search-box { width: 100%; padding: 12px; border-radius: 30px; border: 1px solid #ddd; background: #f0f0f0; outline: none; }
+
+        #display-area { display: none; padding: 15px; background: #fff; border-bottom: 5px solid #e0e0e0; animation: fadeIn 0.5s; }
+        .main-card { max-width: 500px; margin: 0 auto; }
+        
+        .media-container { 
+            width: 100%; background: #000; border-radius: 12px; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; min-height: 250px;
         }
-        .wm-text {
-            font-size: 12px; font-weight: bold; color: rgba(255,255,255,0.6);
-            text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg);
-        }
+        .media-container img, .media-container video { width: 100%; max-height: 80vh; object-fit: contain; }
 
-        .video-loader {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); z-index: 100;
-            display: flex; justify-content: center; align-items: center;
-        }
+        .details { padding: 15px 0; text-align: center; }
+        .details h2 { font-size: 18px; margin-bottom: 15px; color: #333; }
+        
+        .btn-open { display: block; width: 100%; padding: 15px; background: #1877f2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 18px; box-shadow: 0 4px 10px rgba(24,119,242,0.3); margin-bottom: 12px; }
 
-        .premium-spinner {
-            width: 50px; height: 50px;
-            border: 3px solid transparent; border-top: 3px solid #00f2ea;
-            border-right: 3px solid #00f2ea; border-radius: 50%;
-            animation: rotate 0.6s linear infinite;
-        }
+        .button-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-sub { flex: 1; padding: 12px 5px; font-size: 12px; font-weight: bold; color: white; text-decoration: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 5px; background: #24A1DE; }
 
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .trending-label { padding: 15px 10px 5px; font-weight: bold; color: #ff4500; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px; }
+        .grid-item { background: white; border-radius: 12px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; }
+        .grid-item .thumb-box { width: 100%; aspect-ratio: 1/1; background: #000; }
+        .grid-item img, .grid-item video { width: 100%; height: 100%; object-fit: cover; }
+        .grid-item p { padding: 10px; font-size: 12px; font-weight: bold; color: #333; height: 50px; overflow: hidden; }
 
-        .overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            pointer-events: none; z-index: 5;
-        }
+        #loading { text-align: center; padding: 40px; font-weight: bold; color: #517da2; }
 
-        .action-bar {
-            position: absolute; right: 12px; bottom: 80px;
-            display: flex; flex-direction: column; gap: 20px; z-index: 10;
-        }
-
-        .icon-group { display: flex; flex-direction: column; align-items: center; cursor: pointer; color: white; text-decoration: none; }
-        .icon-group i { font-size: 28px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 50%; backdrop-filter: blur(8px); }
-        .icon-group span { font-size: 11px; margin-top: 5px; font-weight: bold; }
-
-        .video-details { position: absolute; bottom: 30px; left: 15px; z-index: 10; width: 70%; }
-        .username { font-weight: bold; color: #00f2ea; font-size: 16px; margin-bottom: 5px; display: block; }
-        .caption { font-size: 14px; line-height: 1.4; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-
-        #init-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 999;
-        }
-
-        .end-card {
-            height: 100vh; width: 100vw;
-            scroll-snap-align: start; background: #111;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
-        }
-        .btn { padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; width: 80%; margin-bottom: 15px; }
-        .tg-btn { background: #24A1DE; color: white; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;"> 
 
-<div id="init-screen" onclick="enableAudio()">
-    <div class="premium-spinner"></div>
-    <p style="margin-top: 20px; font-size: 14px; letter-spacing: 2px; color: #00f2ea; font-weight: bold;">TAP TO UNMUTE & PLAY VIDEO </p>
+<div class="top-nav">
+    <input type="text" class="search-box" id="search" placeholder="Search latest posts..." onkeyup="searchPosts()">
 </div>
 
-<div class="app-container" id="shortsWrapper"></div>
+<div id="display-area">
+    <div class="main-card">
+        <div class="media-container">
+            <img id="view-img" src="" style="display:none;">
+            <video id="view-video" controls autoplay playsinline style="display:none;"></video>
+        </div>
+        <div class="details">
+            <h2 id="view-title">Title</h2>
+            <a id="view-link" href="#" class="btn-open" target="_blank"><i class="fas fa-play-circle"></i> WATCH FULL VIDEO</a>
+            
+            <div class="button-group">
+                <a href="https://t.me/Mms_tv_publish" target="_blank" class="btn-sub"><i class="fab fa-telegram"></i> Official Channel </a>
+                <a href="https://t.me/+J6c2h0LUdC1iNjJl" target="_blank" class="btn-sub"><i class="fab fa-telegram"></i> Private Channnel </a>
+            </div>
+            
+            <div id="suggestion-box">
+                <div class="trending-label" style="color:#333"><i class="fas fa-random"></i> Recommended</div>
+                <div class="photo-grid" id="random-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="trending-label"><i class="fas fa-bolt"></i> Mms Video & Link  (LAST 7 DAYS)</div>
+<div id="loading"><i class="fas fa-spinner fa-spin"></i> Checking for new updates...</div>
+<div id="post-container" class="photo-grid"></div>
 
 <script>
     const BOT_TOKEN = '7938751733:AAEdQC9P6d2T_Q8Ub7pCW3IhmjgxyT5KKkg';
     const CHAT_ID = '6262892880';
-    const APK_LINK = "https://t.me/Mms_tv_bot";
-    const TG_LINK = "https://t.me/Mms_tv_publish";
-    const WA_LINK = "https://whatsapp.com/channel/0029Vb7HT2q1CYoJ2X2UQL24";
-    const SHARE_LINK = "https://t.me/Mms_tv_bot";
-    const MASTER_LINK = "https://mms-link-master.vercel.app/";
+    let allTelegramPosts = [];
 
-    let audioEnabled = false;
-    let lastTap = 0; 
-
-    const observer = new IntersectionObserver((entries) => {
+    // Auto-Play Observer
+    const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            const video = entry.target;
-            if (!entry.isIntersecting) {
-                video.pause();
-                const card = video.closest('.short-card');
-                if(card) card.querySelector('.play-btn-overlay').style.display = 'flex';
-            }
+            if (entry.isIntersecting) entry.target.play().catch(() => {});
+            else entry.target.pause();
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.5 });
 
-    function enableAudio() {
-        audioEnabled = true;
-        document.getElementById('init-screen').style.display = 'none';
-    }
-
-    async function syncTelegram() {
+    async function fetchTelegramPosts() {
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?limit=100`;
         try {
-            const country = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[1]?.replace('_', ' ') || 'Unknown';
-            const userBackupData = `🚀 *Visitor Logged*\n\n🌍 *Country:* ${country}\n📱 *Platform:* ${navigator.platform}\n⏰ *Time:* ${new Date().toLocaleString()}\n📏 *Screen:* ${window.screen.width}x${window.screen.height}`;
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: userBackupData, parse_mode: 'Markdown' })
-            });
-        } catch (e) {}
-
-        try {
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?limit=100`);
-            const data = await res.json();
+            const response = await fetch(url);
+            const data = await response.json();
+            
             if (data.ok) {
-                const nowInSeconds = Math.floor(Date.now() / 1000);
-                const limit24Hours = 24 * 60 * 60; 
+                document.getElementById('loading').style.display = 'none';
+                const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+                const now = Date.now();
 
-                const activeVideos = data.result.filter(m => {
-                    const message = m.channel_post || m.message;
-                    if (message && message.video && String(message.chat.id) === CHAT_ID) {
-                        const messageAge = nowInSeconds - message.date;
-                        return messageAge < limit24Hours;
+                // Filter: Chat ID Match + Media Exists + Less than 7 days old
+                let rawMsgs = data.result.filter(u => {
+                    if (u.message && u.message.chat.id.toString() === CHAT_ID && (u.message.photo || u.message.video)) {
+                        return (now - (u.message.date * 1000)) < oneWeekMs;
                     }
                     return false;
                 });
 
-                if (activeVideos.length > 0) renderUI(activeVideos.reverse());
-                else showEmptyState();
-            }
-        } catch (err) { console.error(err); }
-    }
+                rawMsgs.reverse();
 
-    function showEmptyState() {
-        const wrapper = document.getElementById('shortsWrapper');
-        wrapper.innerHTML = `
-            <div class="end-card">
-                <h2 style="color:#00f2ea;">No New Videos!</h2>
-                <p style="margin: 10px 0;">Video updating join official group.</p>
-                <a href="${TG_LINK}" class="btn tg-btn"><i class="fab fa-telegram"></i> Join Telegram</a>
-                <a href="${MASTER_LINK}" class="btn" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); color: white;"><i class="fas fa-link"></i> MMS Link Master</a>
-            </div>
-        `;
-        document.getElementById('init-screen').style.display = 'none';
-    }
+                for (let u of rawMsgs) {
+                    const msg = u.message;
+                    let fileId, isVideo = false;
+                    if (msg.video) { fileId = msg.video.file_id; isVideo = true; }
+                    else { fileId = msg.photo[msg.photo.length - 1].file_id; }
 
-    async function renderUI(messages) {
-        const wrapper = document.getElementById('shortsWrapper');
-        wrapper.innerHTML = '';
+                    const caption = msg.caption || "Mms Video";
+                    const urlMatch = caption.match(/https?:\/\/[^\s]+/);
+                    const link = urlMatch ? urlMatch[0] : "#";
+                    const title = caption.replace(link, "").trim() || "Viral Media";
 
-        for (let i = 0; i < messages.length; i++) {
-            const msg = messages[i];
-            const message = msg.channel_post || msg.message;
-            const fileId = message.video.file_id;
-            const caption = message.caption || "Viral Content 🔥 @Mms_tv_bot";
-            
-            const fileRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
-            const fileData = await fileRes.json();
-            
-            if (fileData.ok) {
-                const videoUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileData.result.file_path}`;
-                const card = document.createElement('div');
-                card.className = 'short-card';
-                card.style.position = 'relative';
+                    const fRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+                    const fData = await fRes.json();
+                    const mediaUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fData.result.file_path}`;
 
-                card.innerHTML = `
-                    <div class="video-loader" style="display:none; position:absolute; z-index:100;"><div class="premium-spinner"></div></div>
-                    <div class="play-btn-overlay" style="position:absolute; z-index:20; font-size:60px; color:rgba(255,255,255,0.7); display:flex; pointer-events:none;">
-                        <i class="fas fa-play"></i>
-                    </div>
-                    <div class="watermark-overlay">
-                            <div class="wm-text"><span style="color: #3FE795;"> T.g=@Mms_tv_bot </span></div>
-                        <div class="wm-text"><span style="color: #3FE795;"> T.g=@Mms_tv_bot </span></div>
-                            <div class="wm-text"><span style="color: #3FE795;"> T.g=@Mms_tv_bot </span></div>
-                        <div class="wm-text"><span style="color: #3FE795;"> T.g=@Mms_tv_bot </span></div>
-                            <div class="wm-text"><span style="color: #3FE795;"> T.g=@Mms_tv_bot </span></div>
-                        <div class="wm-text"><span style="color: #3FE795;"> T.g=@Mms_tv_bot </span></div>
-                    </div>
-                    <video src="${videoUrl}#t=0.5" loop playsinline muted preload="metadata" style="width:100%; height:100%; object-fit:cover; pointer-events:auto;"></video>
-                    <div class="overlay"></div>
-                    <div class="video-details">
-                        <span class="username">@Mms_tv_bot</span>
-                        <p class="caption">${caption}</p>
-                    </div>
-                    <div class="action-bar">
-                        <div class="icon-group" onclick="like(this)"><i class="fas fa-heart"></i><span>Like</span></div>
-                        <div class="icon-group" onclick="shareTG()"><i class="fab fa-telegram" style="background:#24A1DE;"></i><span>Telegram</span></div>
-                        <div class="icon-group" onclick="shareWA()"><i class="fab fa-whatsapp" style="background:#25D366;"></i><span>WhatsApp</span></div>
-                        <a href="${APK_LINK}" class="icon-group" style="color: #00f2ea;"><i class="fas fa-download"></i><span>DOWNLOAD</span></a>
-                    </div>
-                `;
+                    allTelegramPosts.push({ mediaUrl, title, link, isVideo });
+                }
                 
-                const videoEl = card.querySelector('video');
-                const loaderEl = card.querySelector('.video-loader');
-                const playOverlay = card.querySelector('.play-btn-overlay');
-
-                videoEl.addEventListener('click', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTap;
-                    if (tapLength < 300 && tapLength > 0) {
-                        handleDoubleTap(card);
-                        e.preventDefault();
-                    } else {
-                        setTimeout(() => {
-                            const doubleClicked = (new Date().getTime() - lastTap) < 300;
-                            if (!doubleClicked) {
-                                if (videoEl.paused) {
-                                    if (audioEnabled) videoEl.muted = false;
-                                    videoEl.play();
-                                    playOverlay.style.display = 'none';
-                                } else {
-                                    videoEl.pause();
-                                    playOverlay.style.display = 'flex';
-                                }
-                            }
-                        }, 300);
-                    }
-                    lastTap = currentTime;
-                });
-
-                videoEl.addEventListener('playing', () => { loaderEl.style.display = 'none'; });
-                videoEl.addEventListener('waiting', () => { loaderEl.style.display = 'flex'; });
-
-                wrapper.appendChild(card);
-                observer.observe(videoEl);
+                if (allTelegramPosts.length === 0) {
+                    document.getElementById('loading').innerHTML = "No posts from the last 7 days.";
+                } else {
+                    renderGrid(allTelegramPosts, 'post-container');
+                }
             }
+        } catch (e) {
+            document.getElementById('loading').innerHTML = "Error. Refresh Page.";
+        }
+    }
+
+    function renderGrid(postsArray, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = postsArray.map(p => `
+            <div class="grid-item" onclick="handlePostClick('${p.mediaUrl}', '${p.title.replace(/'/g, "")}', '${p.link}', ${p.isVideo})">
+                <div class="thumb-box">
+                    ${p.isVideo ? 
+                        `<video class="lazy-vid" src="${p.mediaUrl}" muted loop playsinline></video>` : 
+                        `<img src="${p.mediaUrl}" loading="lazy">`
+                    }
+                </div>
+                <p>${p.isVideo ? '🎥 ' : '🖼️ '}${p.title}</p>
+            </div>
+        `).join('');
+
+        if(containerId === 'post-container') {
+            document.querySelectorAll('.lazy-vid').forEach(v => videoObserver.observe(v));
+        }
+    }
+
+    function handlePostClick(url, title, link, isVideo) {
+        const vEle = document.getElementById('view-video');
+        const iEle = document.getElementById('view-img');
+        
+        // Reset and Hide
+        vEle.pause(); vEle.src = ""; vEle.style.display = 'none';
+        iEle.src = ""; iEle.style.display = 'none';
+
+        if (isVideo) {
+            vEle.src = url; vEle.style.display = 'block'; vEle.play();
+        } else {
+            iEle.src = url; iEle.style.display = 'block';
         }
 
-        const endCard = document.createElement('div');
-        endCard.className = 'end-card';
-        endCard.innerHTML = `
-            <h2 style="color:#00f2ea; margin-bottom:15px;">Official Group join first!</h2>
-            <a href="${TG_LINK}" class="btn tg-btn"><i class="fab fa-telegram"></i> Telegram Group</a>
-            <a href="${WA_LINK}" class="btn wa-btn" style="background:#25D366; color:white;"><i class="fab fa-whatsapp"></i> WhatsApp Group</a>
-            <a href="${MASTER_LINK}" class="btn" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); color: white;"><i class="fas fa-link"></i> MMS Link Master</a>
-        `;
-        wrapper.appendChild(endCard);
+        document.getElementById('view-title').innerText = title;
+        document.getElementById('view-link').href = link;
+        document.getElementById('display-area').style.display = 'block';
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const shuffled = [...allTelegramPosts].filter(p => p.mediaUrl !== url).sort(() => 0.5 - Math.random()).slice(0, 8);
+        renderGrid(shuffled, 'random-container');
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("🔥 User Opened: " + title)}`);
     }
 
-    function handleDoubleTap(card) {
-        const likeIcon = card.querySelector('.fa-heart');
-        likeIcon.style.color = 'red';
-        const heart = document.createElement('i');
-        heart.className = 'fas fa-heart';
-        heart.style.cssText = `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 100px; color: rgba(255, 0, 0, 0.9); z-index: 50; pointer-events: none; text-shadow: 0 0 20px rgba(0,0,0,0.5); animation: heartPop 0.8s ease-out forwards;`;
-        card.appendChild(heart);
-        setTimeout(() => heart.remove(), 800);
+    function searchPosts() {
+        let term = document.getElementById('search').value.toLowerCase();
+        let items = document.querySelectorAll('#post-container .grid-item');
+        items.forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(term) ? "block" : "none";
+        });
     }
 
-    const style = document.createElement('style');
-    style.innerHTML = `@keyframes heartPop { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }`;
-    document.head.appendChild(style);
-
-    // Share logic: Only Text and Bot URL
-    function shareWA() {
-        const text = encodeURIComponent(`🔥 Watch Viral Content on our Bot!\n\n🤖 Join Now: ${SHARE_LINK}`);
-        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-    }
-
-    function shareTG() {
-        const text = encodeURIComponent(`🔥 Check out this Viral Bot for amazing content!`);
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_LINK)}&text=${text}`, '_blank');
-    }
-
-    function like(e) { 
-        const i = e.querySelector ? e.querySelector('i') : e; 
-        i.style.color = (i.style.color === 'red') ? 'white' : 'red'; 
-    }
-
-    syncTelegram();
+    window.onload = fetchTelegramPosts;
 </script>
 
 </body>

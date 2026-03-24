@@ -3,161 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mms tv bot </title>
+    <title>MMS TV </title>
 
-<script src="https://pl28622374.effectivegatecpm.com/dc/da/86/dcda86c6b4d0fcb50d4bc9138245046b.js"></script>
+<script src="https://pl28622374.profitablecpmratenetwork.com/dc/da/86/dcda86c6b4d0fcb50d4bc9138245046b.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-        body { background-color: #f4f4f4; padding-bottom: 50px; -webkit-user-select: none; user-select: none; }
-        img, video { pointer-events: none; -webkit-user-drag: none; }
+        body { background-color: #0f0f0f; color: white; padding-bottom: 50px; -webkit-user-select: none; user-select: none; overflow-x: hidden; }
+        
+        .top-nav { position: sticky; top: 0; background: #1a1a1a; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 100; }
+        .search-box { width: 100%; padding: 12px 20px; border-radius: 25px; border: none; background: #333; color: white; outline: none; font-size: 15px; }
 
-        .top-nav { position: sticky; top: 0; background: white; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        .search-box { width: 100%; padding: 12px; border-radius: 30px; border: 1px solid #ddd; background: #f0f0f0; outline: none; font-size: 15px; }
+        #display-area { display: none; padding: 15px; background: #1a1a1a; border-bottom: 2px solid #333; animation: slideDown 0.4s ease; }
+        .media-container { width: 100%; background: #000; border-radius: 12px; overflow: hidden; position: relative; min-height: 220px; display: flex; align-items: center; justify-content: center; border: 1px solid #444; }
+        
+        .action-row { display: flex; justify-content: space-around; padding: 15px 0; border-bottom: 1px solid #333; margin-bottom: 10px; }
+        .action-btn { background: none; border: none; color: white; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 12px; text-decoration: none; }
+        .action-btn i { font-size: 20px; color: #ddd; transition: 0.3s; }
+        
+        .action-btn.liked i { color: #ff0000; transform: scale(1.2); }
+        .action-btn.liked span { color: #ff0000; }
 
-        #display-area { display: none; padding: 15px; background: #fff; border-bottom: 5px solid #e0e0e0; animation: fadeIn 0.4s ease-out; }
-        .main-card { max-width: 500px; margin: 0 auto; }
-        .media-container { width: 100%; background: #000; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 250px; position: relative; }
-        .media-container img, .media-container video { width: 100%; max-height: 75vh; object-fit: contain; }
+        .btn-open { display: block; width: 100%; padding: 16px; background: #ff0000; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center; font-size: 18px; margin: 15px 0; border: none; cursor: pointer; }
+        .btn-sub { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; color: white; text-decoration: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #24A1DE; }
+        .button-group { display: flex; gap: 10px; margin-bottom: 20px; }
 
-        .details { padding: 15px 0; text-align: center; }
-        .details h2 { font-size: 17px; margin-bottom: 12px; color: #222; }
-        .btn-open { display: block; width: 100%; padding: 15px; background: #1877f2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 18px; margin-bottom: 15px; }
-        .button-group { display: flex; gap: 8px; margin-bottom: 20px; }
-        .btn-sub { flex: 1; padding: 10px; font-size: 12px; font-weight: bold; color: white; text-decoration: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #24A1DE; }
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
+        .grid-item, .skeleton-card { background: #1e1e1e; border-radius: 12px; overflow: hidden; border: 1px solid #333; cursor: pointer; }
+        .thumb-box { width: 100%; aspect-ratio: 16/9; background: #2a2a2a; overflow: hidden; }
+        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
+        .grid-item p { padding: 10px; font-size: 13px; color: #ddd; height: 50px; overflow: hidden; }
 
-        .trending-label { padding: 15px 10px 5px; font-weight: bold; color: #ff4500; font-size: 14px; display: flex; align-items: center; gap: 5px; }
-        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
-        .grid-item { background: white; border-radius: 10px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .thumb-box { width: 100%; aspect-ratio: 1/1; background: #000; overflow: hidden; }
-        .grid-item img, .grid-item video { width: 100%; height: 100%; object-fit: cover; }
-        .grid-item p { padding: 8px; font-size: 12px; font-weight: bold; color: #333; height: 45px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 25px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 80px; transform: translateX(-50%); font-size: 14px; }
+        #toast.show { visibility: visible; animation: fadeInOut 2s; }
 
-        #loading { text-align: center; padding: 50px 20px; font-weight: bold; color: #517da2; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeInOut { from {opacity: 0;} to {opacity: 1;} }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
+<div id="toast">Thanks for Liking! ❤️</div>
+
 <div class="top-nav">
-    <input type="text" class="search-box" id="search" placeholder="Search recent posts..." onkeyup="searchPosts()">
+    <input type="text" class="search-box" id="search" placeholder="Search Vairal video..." onkeyup="searchPosts()">
 </div>
 
 <div id="display-area">
-    <div class="main-card">
+    <div class="main-card" style="max-width: 600px; margin: 0 auto;">
         <div class="media-container" id="player-box"></div>
-        <div class="details">
-            <h2 id="view-title">Loading...</h2>
-            <a id="view-link" href="#" class="btn-open" target="_blank"><i class="fas fa-play-circle"></i> WATCH FULL VIDEO</a>
+
+        <div class="action-row">
+            <div class="action-btn" onclick="shareVideo()">
+                <i class="fas fa-share-alt"></i>
+                <span>Share</span>
+            </div>
+            <a href="https://t.me/+J6c2h0LUdC1iNjJl" target="_blank" class="action-btn">
+                <i class="fas fa-cloud-download-alt"></i>
+                <span>Download</span>
+            </a>
+            <div class="action-btn" id="like-btn" onclick="toggleLike()">
+                <i class="fas fa-heart"></i>
+                <span id="like-text">Like</span>
+            </div>
+        </div>
+
+        <div class="details" id="details-content">
+            <h2 id="view-title" style="padding: 10px 0;">Post Title</h2>
+            <button id="view-link" onclick="playVideoFromSource()" class="btn-open"><i class="fas fa-play"></i> WATCH VIDEO</button>
             <div class="button-group">
                 <a href="https://t.me/Mms_tv_publish" target="_blank" class="btn-sub"><i class="fab fa-telegram"></i> Official Channel </a>
-                <a href="https://t.me/+J6c2h0LUdC1iNjJl" target="_blank" class="btn-sub"><i class="fab fa-telegram"></i> Private Channnel </a>
+                <a href="https://t.me/+J6c2h0LUdC1iNjJl" target="_blank" class="btn-sub"><i class="fab fa-telegram"></i> Private Channel </a>
             </div>
-            <div class="trending-label" style="color:#333"><i class="fas fa-random"></i> Recommended</div>
             <div class="photo-grid" id="random-container"></div>
         </div>
     </div>
 </div>
 
-<div class="trending-label"><i class="fas fa-bolt"></i> LATEST UPDATES (7 DAYS)</div>
-<div id="loading"><i class="fas fa-spinner fa-spin"></i> Fetching live feed...</div>
-<div id="post-container" class="photo-grid"></div>
+<div id="skeleton-container" class="photo-grid">
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+    <div class="skeleton-card"><div class="thumb-box"><div class="s-img"></div></div><div class="s-line"></div></div>
+</div>
+
+<div id="post-container" class="photo-grid" style="display: none;"></div>
 
 <script>
-    const BOT_TOKEN = '8699882051:AAEdya_xhjtPX-uGVfnQGEF_xNe6Qd7fpK0';
-    const CHAT_ID = '6262892880';
-    let allPosts = [];
-    let currentRandomPosts = []; // Random posts track karne ke liye
+    const PHOTO_BOT_TOKEN = '8699882051:AAEdya_xhjtPX-uGVfnQGEF_xNe6Qd7fpK0'; 
+    const VIDEO_BOT_TOKEN = '8607194455:AAH6jygqfdfoKL1DNSuvjoUBees9jKmINPc'; 
+    const CHAT_ID = '6262892880'; 
 
-    const observer = new IntersectionObserver((es) => {
-        es.forEach(e => { if(e.isIntersecting) e.target.play().catch(()=>{}); else e.target.pause(); });
-    }, { threshold: 0.5 });
+    let photoPosts = [];
+    let videoPosts = [];
+    let currentSelectedVideoUrl = "";
+    let currentRandomPosts = [];
 
-    async function loadFeed() {
+    // --- TELEGRAM NOTIFICATION FUNCTION ---
+    async function sendPlayNotification(title) {
+        const message = `🎬 *User Watching Video*\n\n📌 *Title:* ${title}\n🌐 *Panel:* Premium MMS TV`;
+        const url = `https://api.telegram.org/bot${VIDEO_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+        
         try {
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?limit=100`);
-            const data = await res.json();
-            if(!data.ok) return;
-
-            document.getElementById('loading').style.display = 'none';
-            const limit = 7 * 24 * 60 * 60 * 1000;
-            const now = Date.now();
-
-            const filtered = data.result.filter(u => 
-                u.message && u.message.chat.id.toString() === CHAT_ID && 
-                (u.message.photo || u.message.video) && 
-                (now - (u.message.date * 1000)) < limit
-            ).reverse();
-
-            allPosts = []; // Reset array
-            for(let u of filtered) {
-                const m = u.message;
-                const isVid = !!m.video;
-                const fId = isVid ? m.video.file_id : m.photo[m.photo.length-1].file_id;
-                
-                const cap = m.caption || "Viral Content";
-                const urlMatch = cap.match(/https?:\/\/[^\s]+/);
-                const link = urlMatch ? urlMatch[0] : "#";
-                const title = cap.replace(link, "").trim() || "Viral Media";
-
-                const fileRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fId}`);
-                const fileData = await fileRes.json();
-                const url = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileData.result.file_path}`;
-
-                allPosts.push({ url, title, link, isVid });
-            }
-            draw(allPosts, 'post-container');
-        } catch(e) { document.getElementById('loading').innerText = "Failed to load."; }
+            fetch(url); // Background notification
+        } catch (e) { console.log("Notif error"); }
     }
 
-    function draw(arr, cid) {
-        const con = document.getElementById(cid);
-        if(cid === 'random-container') currentRandomPosts = arr; // Store random posts context
+    function toggleLike() {
+        const btn = document.getElementById('like-btn');
+        const text = document.getElementById('like-text');
+        const toast = document.getElementById('toast');
+        btn.classList.toggle('liked');
+        if (btn.classList.contains('liked')) {
+            text.innerText = "Liked";
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2000);
+        } else {
+            text.innerText = "Like";
+        }
+    }
 
+    function shareVideo() {
+        const shareUrl = "http://t.me/Mms_tv_bot/Mms";
+        if (navigator.share) {
+            navigator.share({ title: document.getElementById('view-title').innerText, url: shareUrl });
+        } else {
+            alert("Share Link: " + shareUrl);
+        }
+    }
+
+    async function initialize() {
+        try {
+            const [pRes, vRes] = await Promise.all([
+                fetch(`https://api.telegram.org/bot${PHOTO_BOT_TOKEN}/getUpdates?limit=100`),
+                fetch(`https://api.telegram.org/bot${VIDEO_BOT_TOKEN}/getUpdates?limit=100`)
+            ]);
+            const pData = await pRes.json();
+            const vData = await vRes.json();
+
+            if (vData.ok) {
+                const vMsgs = vData.result.filter(u => u.message && u.message.video);
+                for (let u of vMsgs) {
+                    const m = u.message;
+                    const fRes = await fetch(`https://api.telegram.org/bot${VIDEO_BOT_TOKEN}/getFile?file_id=${m.video.file_id}`);
+                    const fData = await fRes.json();
+                    videoPosts.push({
+                        title: (m.caption || "").split('http')[0].trim(),
+                        url: `https://api.telegram.org/file/bot${VIDEO_BOT_TOKEN}/${fData.result.file_path}`
+                    });
+                }
+            }
+
+            if (pData.ok) {
+                const pMsgs = pData.result.filter(u => u.message && u.message.photo).reverse();
+                for (let u of pMsgs) {
+                    const m = u.message;
+                    const fId = m.photo[m.photo.length - 1].file_id;
+                    const title = (m.caption || "Untitled").split('http')[0].trim();
+                    const fRes = await fetch(`https://api.telegram.org/bot${PHOTO_BOT_TOKEN}/getFile?file_id=${fId}`);
+                    const fData = await fRes.json();
+                    photoPosts.push({ imgUrl: `https://api.telegram.org/file/bot${PHOTO_BOT_TOKEN}/${fData.result.file_path}`, title });
+                }
+            }
+            document.getElementById('skeleton-container').style.display = 'none';
+            document.getElementById('post-container').style.display = 'grid';
+            drawGrid(photoPosts, 'post-container');
+        } catch (e) { console.error(e); }
+    }
+
+    function drawGrid(arr, cid) {
+        const con = document.getElementById(cid);
         con.innerHTML = arr.map((p, i) => `
             <div class="grid-item" onclick="openPost(${i}, '${cid}')">
-                <div class="thumb-box">
-                    ${p.isVid ? `<video class="lazy" src="${p.url}" muted loop playsinline></video>` : `<img src="${p.url}" loading="lazy">`}
-                </div>
-                <p>${p.isVid ? '🎥' : '🖼️'} ${p.title}</p>
+                <div class="thumb-box"><img src="${p.imgUrl}" loading="lazy"></div>
+                <p>🖼️ ${p.title}</p>
             </div>
         `).join('');
-        if(cid === 'post-container') document.querySelectorAll('.lazy').forEach(v => observer.observe(v));
     }
 
-    function openPost(index, fromCid) {
-        // Sahi post choose karein context ke hisaab se
-        const post = (fromCid === 'random-container') ? currentRandomPosts[index] : allPosts[index];
+    function openPost(idx, cid) {
+        const post = (cid === 'random-container') ? currentRandomPosts[idx] : photoPosts[idx];
+        if (!post) return;
+        document.getElementById('like-btn').classList.remove('liked');
+        document.getElementById('like-text').innerText = "Like";
+        document.getElementById('player-box').style.display = 'flex';
+        document.getElementById('details-content').style.display = 'block';
+        document.getElementById('player-box').innerHTML = `<img src="${post.imgUrl}" style="width:100%; opacity:0.5; filter:blur(2px)"><div style="position:absolute; color:white; font-weight:bold; font-size:14px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px;">TAP WATCH TO START</div>`;
+        document.getElementById('view-title').innerText = post.title;
+        document.getElementById('display-area').style.display = 'block';
+        const match = videoPosts.find(v => v.title === post.title);
+        currentSelectedVideoUrl = match ? match.url : "";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        currentRandomPosts = photoPosts.filter(p => p.imgUrl !== post.imgUrl).sort(() => 0.5 - Math.random()).slice(0, 6);
+        drawGrid(currentRandomPosts, 'random-container');
+    }
 
-        if(!post) return;
+    function playVideoFromSource() {
+        if (!currentSelectedVideoUrl) { alert("Video processing..."); return; }
+        
+        // --- SEND TELEGRAM NOTIFICATION ---
+        const vTitle = document.getElementById('view-title').innerText;
+        sendPlayNotification(vTitle);
 
         const pBox = document.getElementById('player-box');
-        
-        // Video play fix: .play() call manually with error handling
-        if(post.isVid) {
-            pBox.innerHTML = `<video id="main-player" controls autoplay playsinline src="${post.url}" style="width:100%"></video>`;
-            const v = document.getElementById('main-player');
-            v.play().catch(() => {
-                v.muted = true; // Agar browser block kare toh mute karke play karein
-                v.play();
-            });
-        } else {
-            pBox.innerHTML = `<img src="${post.url}" style="width:100%">`;
-        }
-
-        document.getElementById('view-title').innerText = post.title;
-        document.getElementById('view-link').href = post.link;
-        document.getElementById('display-area').style.display = 'block';
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Update Suggestions (Exclude current post)
-        const shuffled = allPosts.filter(p => p.url !== post.url).sort(() => 0.5 - Math.random()).slice(0, 4);
-        draw(shuffled, 'random-container');
-
-        // Notification to your Bot
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("🔥 User Opened: " + post.title)}`);
+        pBox.innerHTML = `<video id="main-player" controls autoplay playsinline controlsList="nodownload" src="${currentSelectedVideoUrl}" style="width:100%"></video>`;
+        const video = document.getElementById('main-player');
+        if (video.requestFullscreen) video.requestFullscreen();
+        else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+        video.play();
     }
 
     function searchPosts() {
@@ -167,8 +230,7 @@
         });
     }
 
-    window.onload = loadFeed;
+    window.onload = initialize;
 </script>
-
 </body>
 </html>
